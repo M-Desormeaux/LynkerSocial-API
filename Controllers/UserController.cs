@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using LynkerSocial_API.Models;
 using LynkerSocial_API.ViewModels;
 using System.Threading;
+using System;
 
 namespace LynkerSocial_API.Controllers
 {
@@ -47,6 +48,28 @@ namespace LynkerSocial_API.Controllers
             };
 
             _db.Users.Add(user);
+            await _db.SaveChangesAsync(cancelToken);
+
+            return Ok(response);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUser(Guid userId, CancellationToken cancelToken)
+        {
+            Response response = new Response();
+
+            User user = await _db.Users.FindAsync(userId);
+
+            if (user is null)
+            {
+                response.Message = "User not found";
+                return NotFound(response);
+            }
+
+            response.Success = true;
+            response.Message = $"{user.Name} deleted.";
+
+            _db.Users.Remove(user);
             await _db.SaveChangesAsync(cancelToken);
 
             return Ok(response);
