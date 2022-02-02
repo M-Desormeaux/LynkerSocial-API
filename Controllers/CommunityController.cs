@@ -44,5 +44,27 @@ namespace LynkerSocial_API.Controllers
 
             return Ok(response);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCommunity(Guid communityId, CancellationToken cancelToken)
+        {
+            Response response = new Response();
+
+            Community community = await _db.Communities.FindAsync(communityId);
+
+            if (community is null)
+            {
+                response.Message = "Communities not found";
+                return NotFound(response);
+            }
+
+            response.Success = true;
+            response.Message = $"{community.Name} deleted.";
+
+            _db.Communities.Remove(community);
+            await _db.SaveChangesAsync(cancelToken);
+
+            return Ok(response);
+        }
     }
 }
