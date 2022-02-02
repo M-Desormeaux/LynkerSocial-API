@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using LynkerSocial_API.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using LynkerSocial_API.Models;
+using System.Threading;
 
 namespace LynkerSocial_API.Controllers
 {
@@ -17,7 +18,7 @@ namespace LynkerSocial_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePost(PostViewModel postModel)
+        public async Task<IActionResult> CreatePost(PostViewModel postModel, CancellationToken cancelToken)
         {
             Response response = new Response()
             {
@@ -25,15 +26,19 @@ namespace LynkerSocial_API.Controllers
                 Message = "Post Successful."
             };
 
+            // @TODO: Add verification that user exists!
+
             Post post = new Post()
             {
-                // User?
-
-                User = postModel.User,
+                UserId = postModel.UserId,
                 Title = postModel.Title,
                 Body = postModel.Body
-            }
-            return Ok();
+            };
+
+            _db.Posts.Add(post);
+            await _db.SaveChangesAsync(cancelToken);
+
+            return Ok(response);
         }
     }
 }
