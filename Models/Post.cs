@@ -4,9 +4,9 @@ namespace LynkerSocial_API.Models
 {
     public class Post
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public Guid Id { get; set; } = Guid.NewGuid();
         public DateTime CreationDate { get; set; } = DateTime.Now;
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
         public User User { get; set; }
         public string Title { get; set; }
         public string Body { get; set; }
