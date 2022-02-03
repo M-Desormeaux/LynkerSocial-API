@@ -8,7 +8,11 @@ namespace LynkerSocial_API.ViewModels
     {
         [Required]
         public Guid UserId { get; set; }
+        [Required]
+        public Guid CommunityId { get; set; }
+        [Required]
         public string Title { get; set; }
+        [Required]
         public string Body { get; set; }
     }
 }
