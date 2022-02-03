@@ -53,6 +53,9 @@ namespace LynkerSocial_API.Migrations
                     b.Property<string>("Body")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("CommunityId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
@@ -66,6 +69,8 @@ namespace LynkerSocial_API.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CommunityId");
 
                     b.HasIndex("UserId");
 
@@ -108,13 +113,26 @@ namespace LynkerSocial_API.Migrations
 
             modelBuilder.Entity("LynkerSocial_API.Models.Post", b =>
                 {
+                    b.HasOne("LynkerSocial_API.Models.Community", "Community")
+                        .WithMany("Posts")
+                        .HasForeignKey("CommunityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("LynkerSocial_API.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Community");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LynkerSocial_API.Models.Community", b =>
+                {
+                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }
