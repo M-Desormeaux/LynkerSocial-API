@@ -24,11 +24,7 @@ namespace LynkerSocial_API.Controllers
         public async Task<IActionResult> GetPost(Guid postId)
         {
             var post = await _db.Posts.FindAsync(postId);
-
-            if (post == null)
-            {
-                return NotFound(ApiResponse<Post>.Failure("Post not found"));
-            }
+            if (post == null) { return NotFound(ApiResponse<Post>.Failure("Post not found")); }
 
             return Ok(ApiResponse<Post>.Success(post));
         }
@@ -44,8 +40,8 @@ namespace LynkerSocial_API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePost(PostViewModel postModel, CancellationToken cancelToken)
         {
-
-            // @TODO: Add verification that user exists!
+            var user = await _db.Users.FindAsync(postModel.UserId);
+            if (user == null) { return NotFound(ApiResponse.Failure("User not found")); }
 
             Post post = new()
             {
@@ -63,13 +59,8 @@ namespace LynkerSocial_API.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeletePost(Guid postId, CancellationToken cancelToken)
         {
-
             Post post = await _db.Posts.FindAsync(postId);
-
-            if (post is null)
-            {
-                return NotFound(ApiResponse<Post>.Failure("Post not found"));
-            }
+            if (post is null) { return NotFound(ApiResponse<Post>.Failure("Post not found")); }
 
             _db.Posts.Remove(post);
             await _db.SaveChangesAsync(cancelToken);
