@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using LynkerSocial_API.Models;
 using System.Threading;
 using System;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace LynkerSocial_API.Controllers
 {
@@ -18,18 +20,34 @@ namespace LynkerSocial_API.Controllers
             _db = db;
         }
 
+        [HttpGet("{postId}")]
+        public async Task<IActionResult> GetPost(Guid postId)
+        {
+            var post = await _db.Posts.FindAsync(postId);
+
+            if (post == null)
+            {
+                return NotFound(ApiResponse<Post>.Failure("Post not found"));
+            }
+
+            return Ok(ApiResponse<Post>.Success(post));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPosts()
+        {
+            var postList = await _db.Posts.ToListAsync();
+
+            return Ok(ApiResponse<IEnumerable<Post>>.Success(postList));
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreatePost(PostViewModel postModel, CancellationToken cancelToken)
         {
-            Response response = new Response()
-            {
-                Success = true,
-                Message = "Post Successful."
-            };
 
             // @TODO: Add verification that user exists!
 
-            Post post = new Post()
+            Post post = new()
             {
                 UserId = postModel.UserId,
                 Title = postModel.Title,
@@ -39,29 +57,24 @@ namespace LynkerSocial_API.Controllers
             _db.Posts.Add(post);
             await _db.SaveChangesAsync(cancelToken);
 
-            return Ok(response);
+            return Ok(ApiResponse<Guid>.Success(post.Id));
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeletePost(Guid postId, CancellationToken cancelToken)
         {
-            Response response = new Response();
 
             Post post = await _db.Posts.FindAsync(postId);
 
             if (post is null)
             {
-                response.Message = "Post not found";
-                return NotFound(response);
+                return NotFound(ApiResponse<Post>.Failure("Post not found"));
             }
-
-            response.Success = true;
-            response.Message = $"{post.Title} deleted.";
 
             _db.Posts.Remove(post);
             await _db.SaveChangesAsync(cancelToken);
 
-            return Ok(response);
+            return Ok();
         }
     }
 }

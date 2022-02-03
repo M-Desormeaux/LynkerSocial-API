@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using LynkerSocial_API.Models;
 using LynkerSocial_API.ViewModels;
 using System.Threading;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace LynkerSocial_API.Controllers
 {
@@ -21,18 +21,33 @@ namespace LynkerSocial_API.Controllers
             _db = db;
         }
 
+        [HttpGet("{communityId}")]
+        public async Task<IActionResult> GetCommunity(Guid communityId)
+        {
+            var community = await _db.Communities.FindAsync(communityId);
+
+            if (community == null)
+            {
+                return NotFound(ApiResponse<Community>.Failure("Community not found"));
+            }
+
+            return Ok(ApiResponse<Community>.Success(community));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCommunities()
+        {
+            var communityList = await _db.Communities.ToListAsync();
+
+            return Ok(ApiResponse<IEnumerable<Community>>.Success(communityList));
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateCommunity(CommunityViewModel communityModel, CancellationToken cancelToken)
         {
-            Response response = new Response()
-            {
-                Success = true,
-                Message = "Community created."
-            };
-
             // @TODO: Add verification that user exists!
 
-            Community community = new Community()
+            Community community = new()
             {
                 UserId = communityModel.UserId,
                 Name = communityModel.Name,
@@ -42,29 +57,23 @@ namespace LynkerSocial_API.Controllers
             _db.Communities.Add(community);
             await _db.SaveChangesAsync(cancelToken);
 
-            return Ok(response);
+            return Ok(ApiResponse<Guid>.Success(community.Id));
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteCommunity(Guid communityId, CancellationToken cancelToken)
         {
-            Response response = new Response();
-
             Community community = await _db.Communities.FindAsync(communityId);
 
             if (community is null)
             {
-                response.Message = "Communities not found";
-                return NotFound(response);
+                return NotFound(ApiResponse.Failure("Community not found"));
             }
-
-            response.Success = true;
-            response.Message = $"{community.Name} deleted.";
 
             _db.Communities.Remove(community);
             await _db.SaveChangesAsync(cancelToken);
 
-            return Ok(response);
+            return Ok();
         }
     }
 }
