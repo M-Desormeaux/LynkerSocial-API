@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LynkerSocial_API.Migrations
 {
     [DbContext(typeof(LynkerdbContext))]
-    [Migration("20220203023201_test1")]
-    partial class test1
+    [Migration("20220203233527_stupid")]
+    partial class stupid
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -74,7 +74,8 @@ namespace LynkerSocial_API.Migrations
 
                     b.HasIndex("CommunityId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Posts");
                 });
@@ -116,25 +117,20 @@ namespace LynkerSocial_API.Migrations
             modelBuilder.Entity("LynkerSocial_API.Models.Post", b =>
                 {
                     b.HasOne("LynkerSocial_API.Models.Community", "Community")
-                        .WithMany("Posts")
+                        .WithMany()
                         .HasForeignKey("CommunityId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LynkerSocial_API.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithOne()
+                        .HasForeignKey("LynkerSocial_API.Models.Post", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Community");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LynkerSocial_API.Models.Community", b =>
-                {
-                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }

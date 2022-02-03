@@ -18,7 +18,27 @@ namespace LynkerSocial_API
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Community>().HasMany(x => x.Posts).WithOne(x => x.Community).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Post>().HasOne(x => x.User).WithOne().OnDelete(DeleteBehavior.Restrict);
+
+            // modelBuilder.Entity<Post>()
+            // .HasOne(p => p.Community)
+            // .WithMany(p => p.Posts)
+            // .UsingEntity<Post>(
+            //     j => j
+            //         .HasOne(pt => pt.Tag)
+            //         .WithMany(t => t.PostTags)
+            //         .HasForeignKey(pt => pt.TagId)
+            //         .OnDelete(DeleteBehavior.Restrict),
+            //     j => j
+            //         .HasOne(pt => pt.Post)
+            //         .WithMany(p => p.PostTags)
+            //         .HasForeignKey(pt => pt.PostId)
+            //         .OnDelete(DeleteBehavior.Restrict),
+            //     j =>
+            //     {
+            //         j.Property(pt => pt.PublicationDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            //         j.HasKey(t => new { t.PostId, t.TagId });
+            //     });
         }
     }
 }
