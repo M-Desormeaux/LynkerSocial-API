@@ -12,7 +12,6 @@ namespace LynkerSocial_API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
-
     {
         private readonly LynkerdbContext _db;
 
@@ -56,7 +55,6 @@ namespace LynkerSocial_API.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteUser(Guid userId, CancellationToken cancelToken)
         {
-
             User user = await _db.Users.FindAsync(userId);
             if (user is null) { return NotFound(ApiResponse<User>.Failure("User not found")); }
 
