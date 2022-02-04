@@ -4,14 +4,16 @@ using LynkerSocial_API;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LynkerSocial_API.Migrations
 {
     [DbContext(typeof(LynkerdbContext))]
-    partial class LynkerdbContextModelSnapshot : ModelSnapshot
+    [Migration("20220203233527_stupid")]
+    partial class stupid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +36,7 @@ namespace LynkerSocial_API.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -65,14 +67,15 @@ namespace LynkerSocial_API.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CommunityId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Posts");
                 });
@@ -104,7 +107,9 @@ namespace LynkerSocial_API.Migrations
                 {
                     b.HasOne("LynkerSocial_API.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -118,9 +123,10 @@ namespace LynkerSocial_API.Migrations
                         .IsRequired();
 
                     b.HasOne("LynkerSocial_API.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
+                        .WithOne()
+                        .HasForeignKey("LynkerSocial_API.Models.Post", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Community");
 
