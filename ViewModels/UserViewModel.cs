@@ -7,6 +7,7 @@ namespace LynkerSocial_API.ViewModels
     {
         [Required]
         public string Name { get; set; }
+        [Required]
         public DateTime Birthday { get; set; }
     }
 }

@@ -7,12 +7,13 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
+// TODO: Add verification checks
+
 namespace LynkerSocial_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
-
     {
         private readonly LynkerdbContext _db;
 
@@ -25,11 +26,7 @@ namespace LynkerSocial_API.Controllers
         public async Task<IActionResult> GetUser(Guid userId)
         {
             var user = await _db.Users.FindAsync(userId);
-
-            if (user == null)
-            {
-                return NotFound(ApiResponse.Failure("User not found"));
-            }
+            if (user == null) { return NotFound(ApiResponse.Failure("User not found")); }
 
             return Ok(ApiResponse<User>.Success(user));
         }
@@ -60,13 +57,8 @@ namespace LynkerSocial_API.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteUser(Guid userId, CancellationToken cancelToken)
         {
-
             User user = await _db.Users.FindAsync(userId);
-
-            if (user is null)
-            {
-                return NotFound(ApiResponse<User>.Failure("User not found"));
-            }
+            if (user is null) { return NotFound(ApiResponse<User>.Failure("User not found")); }
 
             _db.Users.Remove(user);
             await _db.SaveChangesAsync(cancelToken);

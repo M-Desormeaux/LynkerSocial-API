@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LynkerSocial_API.Migrations
 {
     [DbContext(typeof(LynkerdbContext))]
-    [Migration("20220202033206_guid")]
-    partial class guid
+    [Migration("20220203233527_stupid")]
+    partial class stupid
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -55,6 +55,9 @@ namespace LynkerSocial_API.Migrations
                     b.Property<string>("Body")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("CommunityId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
@@ -69,7 +72,10 @@ namespace LynkerSocial_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CommunityId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Posts");
                 });
@@ -110,11 +116,19 @@ namespace LynkerSocial_API.Migrations
 
             modelBuilder.Entity("LynkerSocial_API.Models.Post", b =>
                 {
-                    b.HasOne("LynkerSocial_API.Models.User", "User")
+                    b.HasOne("LynkerSocial_API.Models.Community", "Community")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("CommunityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("LynkerSocial_API.Models.User", "User")
+                        .WithOne()
+                        .HasForeignKey("LynkerSocial_API.Models.Post", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Community");
 
                     b.Navigation("User");
                 });

@@ -8,6 +8,8 @@ using LynkerSocial_API.ViewModels;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 
+// TODO: Add verification checks
+
 namespace LynkerSocial_API.Controllers
 {
     [ApiController]
@@ -25,11 +27,7 @@ namespace LynkerSocial_API.Controllers
         public async Task<IActionResult> GetCommunity(Guid communityId)
         {
             var community = await _db.Communities.FindAsync(communityId);
-
-            if (community == null)
-            {
-                return NotFound(ApiResponse<Community>.Failure("Community not found"));
-            }
+            if (community == null) { return NotFound(ApiResponse<Community>.Failure("Community not found")); }
 
             return Ok(ApiResponse<Community>.Success(community));
         }
@@ -45,7 +43,8 @@ namespace LynkerSocial_API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCommunity(CommunityViewModel communityModel, CancellationToken cancelToken)
         {
-            // @TODO: Add verification that user exists!
+            var user = await _db.Users.FindAsync(communityModel.UserId);
+            if (user == null) { return NotFound(ApiResponse.Failure("User not found")); }
 
             Community community = new()
             {
@@ -64,11 +63,7 @@ namespace LynkerSocial_API.Controllers
         public async Task<IActionResult> DeleteCommunity(Guid communityId, CancellationToken cancelToken)
         {
             Community community = await _db.Communities.FindAsync(communityId);
-
-            if (community is null)
-            {
-                return NotFound(ApiResponse.Failure("Community not found"));
-            }
+            if (community is null) { return NotFound(ApiResponse.Failure("Community not found")); }
 
             _db.Communities.Remove(community);
             await _db.SaveChangesAsync(cancelToken);
