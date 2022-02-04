@@ -8,6 +8,8 @@ using LynkerSocial_API.ViewModels;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 
+// TODO: Add verification checks
+
 namespace LynkerSocial_API.Controllers
 {
     [ApiController]

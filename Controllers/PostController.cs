@@ -6,6 +6,9 @@ using System.Threading;
 using System;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
+
+// TODO: Add verification checks
 
 namespace LynkerSocial_API.Controllers
 {
@@ -20,13 +23,27 @@ namespace LynkerSocial_API.Controllers
             _db = db;
         }
 
-        [HttpGet("{postId}")]
+        [HttpGet("p/{postId}")]
         public async Task<IActionResult> GetPost(Guid postId)
         {
             var post = await _db.Posts.FindAsync(postId);
             if (post == null) { return NotFound(ApiResponse<Post>.Failure("Post not found")); }
 
             return Ok(ApiResponse<Post>.Success(post));
+        }
+
+        [HttpGet("c/{communityId}")]
+        public async Task<IActionResult> GetCommunityPosts(Guid communityId)
+        {
+            var communityPostList = await _db.Posts.Where(x => x.CommunityId == communityId).ToListAsync();
+            return Ok(ApiResponse<IEnumerable<Post>>.Success(communityPostList));
+        }
+
+        [HttpGet("u/{userId}")]
+        public async Task<IActionResult> GetUserPosts(Guid userId)
+        {
+            var userPostList = await _db.Posts.Where(x => x.UserId == userId).ToListAsync();
+            return Ok(ApiResponse<IEnumerable<Post>>.Success(userPostList));
         }
 
         [HttpGet]
@@ -46,6 +63,7 @@ namespace LynkerSocial_API.Controllers
             Post post = new()
             {
                 UserId = postModel.UserId,
+                CommunityId = postModel.CommunityId,
                 Title = postModel.Title,
                 Body = postModel.Body
             };
