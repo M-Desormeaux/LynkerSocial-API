@@ -7,6 +7,8 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
+// TODO: Add verification checks
+
 namespace LynkerSocial_API.Controllers
 {
     [ApiController]

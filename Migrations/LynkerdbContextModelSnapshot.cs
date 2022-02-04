@@ -34,7 +34,7 @@ namespace LynkerSocial_API.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -65,15 +65,14 @@ namespace LynkerSocial_API.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CommunityId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Posts");
                 });
@@ -105,9 +104,7 @@ namespace LynkerSocial_API.Migrations
                 {
                     b.HasOne("LynkerSocial_API.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -121,10 +118,8 @@ namespace LynkerSocial_API.Migrations
                         .IsRequired();
 
                     b.HasOne("LynkerSocial_API.Models.User", "User")
-                        .WithOne()
-                        .HasForeignKey("LynkerSocial_API.Models.Post", "UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Community");
 
