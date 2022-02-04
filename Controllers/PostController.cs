@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 // TODO: Add verification checks
-
 namespace LynkerSocial_API.Controllers
 {
     [ApiController]
