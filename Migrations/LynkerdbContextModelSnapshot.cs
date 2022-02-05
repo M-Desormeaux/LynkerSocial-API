@@ -121,7 +121,6 @@ namespace LynkerSocial_API.Migrations
                         .WithMany()
                         .HasForeignKey("UserId");
 
-
                     b.Navigation("Community");
 
                     b.Navigation("User");

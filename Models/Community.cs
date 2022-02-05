@@ -11,6 +11,5 @@ namespace LynkerSocial_API.Models
         public User User { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        // public List<Post> Posts { get; set; }
     }
 }
