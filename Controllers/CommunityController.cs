@@ -27,9 +27,9 @@ namespace LynkerSocial_API.Controllers
         public async Task<IActionResult> GetCommunity(Guid communityId)
         {
             var community = await _db.Communities.FindAsync(communityId);
-            if (community == null) { return NotFound(ApiResponse<Community>.Failure("Community not found")); }
+            if (community == null) { return NotFound("Community not found"); }
 
-            return Ok(ApiResponse<Community>.Success(community));
+            return Ok(community);
         }
 
         [HttpGet]
@@ -37,14 +37,14 @@ namespace LynkerSocial_API.Controllers
         {
             var communityList = await _db.Communities.ToListAsync();
 
-            return Ok(ApiResponse<IEnumerable<Community>>.Success(communityList));
+            return Ok(communityList);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateCommunity(CommunityViewModel communityModel, CancellationToken cancelToken)
         {
             var user = await _db.Users.FindAsync(communityModel.UserId);
-            if (user == null) { return NotFound(ApiResponse.Failure("User not found")); }
+            if (user == null) { return NotFound("User not found"); }
 
             Community community = new()
             {
@@ -56,14 +56,14 @@ namespace LynkerSocial_API.Controllers
             _db.Communities.Add(community);
             await _db.SaveChangesAsync(cancelToken);
 
-            return Ok(ApiResponse<Guid>.Success(community.Id));
+            return Ok(community.Id);
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteCommunity(Guid communityId, CancellationToken cancelToken)
         {
             Community community = await _db.Communities.FindAsync(communityId);
-            if (community is null) { return NotFound(ApiResponse.Failure("Community not found")); }
+            if (community is null) { return NotFound("Community not found"); }
 
             _db.Communities.Remove(community);
             await _db.SaveChangesAsync(cancelToken);

@@ -26,9 +26,9 @@ namespace LynkerSocial_API.Controllers
         public async Task<IActionResult> GetUser(Guid userId)
         {
             var user = await _db.Users.FindAsync(userId);
-            if (user == null) { return NotFound(ApiResponse.Failure("User not found")); }
+            if (user == null) { return NotFound("User not found"); }
 
-            return Ok(ApiResponse<User>.Success(user));
+            return Ok(user);
         }
 
         [HttpGet]
@@ -36,7 +36,7 @@ namespace LynkerSocial_API.Controllers
         {
             var userList = await _db.Users.ToListAsync();
 
-            return Ok(ApiResponse<IEnumerable<User>>.Success(userList));
+            return Ok(userList);
         }
 
         [HttpPost]
@@ -51,14 +51,14 @@ namespace LynkerSocial_API.Controllers
             _db.Users.Add(user);
             await _db.SaveChangesAsync(cancelToken);
 
-            return Ok(ApiResponse<Guid>.Success(user.Id));
+            return Ok(user.Id);
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteUser(Guid userId, CancellationToken cancelToken)
         {
             User user = await _db.Users.FindAsync(userId);
-            if (user is null) { return NotFound(ApiResponse<User>.Failure("User not found")); }
+            if (user is null) { return NotFound("User not found"); }
 
             _db.Users.Remove(user);
             await _db.SaveChangesAsync(cancelToken);

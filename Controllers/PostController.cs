@@ -25,39 +25,39 @@ namespace LynkerSocial_API.Controllers
         [HttpGet("p/{postId}")]
         public async Task<IActionResult> GetPost(Guid postId)
         {
-            var post = await _db.Posts.FindAsync(postId);
-            if (post == null) { return NotFound(ApiResponse<Post>.Failure("Post not found")); }
+            var post = await _db.Posts.Where(x => x.Id == postId).Include(x => x.User).Include(x => x.Community).FirstOrDefaultAsync();
+            if (post == null) { return NotFound("Post not found"); }
 
-            return Ok(ApiResponse<Post>.Success(post));
+            return Ok(post);
         }
 
         [HttpGet("c/{communityId}")]
         public async Task<IActionResult> GetCommunityPosts(Guid communityId)
         {
-            var communityPostList = await _db.Posts.Where(x => x.CommunityId == communityId).ToListAsync();
-            return Ok(ApiResponse<IEnumerable<Post>>.Success(communityPostList));
+            var communityPostList = await _db.Posts.Where(x => x.CommunityId == communityId).Include(x => x.User).ToListAsync();
+            return Ok(communityPostList);
         }
 
         [HttpGet("u/{userId}")]
         public async Task<IActionResult> GetUserPosts(Guid userId)
         {
-            var userPostList = await _db.Posts.Where(x => x.UserId == userId).ToListAsync();
-            return Ok(ApiResponse<IEnumerable<Post>>.Success(userPostList));
+            var userPostList = await _db.Posts.Where(x => x.UserId == userId).Include(x => x.Community).ToListAsync();
+            return Ok(userPostList);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllPosts()
         {
-            var postList = await _db.Posts.ToListAsync();
+            var postList = await _db.Posts.Include(x => x.User).Include(x => x.Community).ToListAsync();
 
-            return Ok(ApiResponse<IEnumerable<Post>>.Success(postList));
+            return Ok(postList);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreatePost(PostViewModel postModel, CancellationToken cancelToken)
         {
             var user = await _db.Users.FindAsync(postModel.UserId);
-            if (user == null) { return NotFound(ApiResponse.Failure("User not found")); }
+            if (user == null) { return NotFound("User not found"); }
 
             Post post = new()
             {
@@ -70,14 +70,14 @@ namespace LynkerSocial_API.Controllers
             _db.Posts.Add(post);
             await _db.SaveChangesAsync(cancelToken);
 
-            return Ok(ApiResponse<Guid>.Success(post.Id));
+            return Ok(post.Id);
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeletePost(Guid postId, CancellationToken cancelToken)
         {
             Post post = await _db.Posts.FindAsync(postId);
-            if (post is null) { return NotFound(ApiResponse<Post>.Failure("Post not found")); }
+            if (post is null) { return NotFound("Post not found"); }
 
             _db.Posts.Remove(post);
             await _db.SaveChangesAsync(cancelToken);
