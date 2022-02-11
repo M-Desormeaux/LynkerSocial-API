@@ -26,7 +26,7 @@ namespace LynkerSocial_API.Controllers
         [HttpGet("{communityId}")]
         public async Task<IActionResult> GetCommunity(Guid communityId)
         {
-            var community = await _db.Communities.FindAsync(communityId);
+            var community = await _db.Communities.Where(x => x.Id == communityId).Include(x => x.User).FirstOrDefaultAsync();
             if (community == null) { return NotFound("Community not found"); }
 
             return Ok(community);
@@ -35,7 +35,7 @@ namespace LynkerSocial_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCommunities()
         {
-            var communityList = await _db.Communities.ToListAsync();
+            var communityList = await _db.Communities.Include(x => x.User).ToListAsync();
 
             return Ok(communityList);
         }
